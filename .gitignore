@@ -1,0 +1,17 @@
+# Credentials and Sensitive Files
+*CREDENTIALS*.md
+*credentials*.md
+DEMO_CREDENTIALS.md
+credentials.md
+*.local
+.env
+.env.*
+.env.local
+
+# Dependencies
+node_modules/
+dist/
+build/
+.vscode/
+.idea/
+*.log
