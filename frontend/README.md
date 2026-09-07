@@ -10,7 +10,7 @@ High-performance, modern React web application for the **Smart India Hackathon P
 - **Styling**: Tailwind CSS + Lucide React icon suite
 - **Data Visualization**: Recharts (skill radar, readiness distributions, analytics)
 - **API Client**: Axios instance (`apiClient.ts`) configured with:
-  - Base URL: `http://localhost:5000/api/v1`
+  - Base URL: `https://sih2026-skillsync-ps0044-production.up.railway.app/api/v1`
   - Automatic JWT token attachment
   - Transparent 401 interceptor with queued refresh token rotation
 - **Routing & RBAC**: React Router v6 with `ProtectedRoute` and `RoleBasedRoute` across 4 authenticated roles.
