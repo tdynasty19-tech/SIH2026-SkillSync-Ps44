@@ -26,7 +26,7 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
 
   // Frontend URL (for CORS - comma-separated list or single URL)
-  FRONTEND_URL: z.string().default('http://localhost:3000,http://localhost:5173'),
+  FRONTEND_URL: z.string().default('http://localhost:3000,http://localhost:5173,https://sih-2026-skill-sync-ps44-mxmu.vercel.app'),
 
   // AI Configuration
   AI_PROVIDER: z.string().default('gemini'),
