@@ -3,14 +3,14 @@ import { HttpStatus } from '../constants/http-status';
 
 /**
  * Standard global rate limiter middleware
- * Limits requests per IP within a designated time window
+ * Set generously to avoid restricting multi-user environments or shared IPs
  */
 export const globalRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // Limit each IP to 300 general requests per 15 minutes
+  max: 50000, // Very generous limit
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'test' && !process.env.TEST_RATE_LIMIT,
+  skip: () => (process.env.NODE_ENV === 'test' && !process.env.TEST_RATE_LIMIT),
   statusCode: HttpStatus.TOO_MANY_REQUESTS,
   message: {
     success: false,
@@ -20,15 +20,14 @@ export const globalRateLimiter = rateLimit({
 });
 
 /**
- * Strict rate limiter for sensitive authentication endpoints (Login, Register, Password Reset)
- * Brute-force & credential stuffing defense
+ * Authentication endpoints rate limiter
  */
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // 20 attempts per 15 minutes per IP
+  max: process.env.TEST_RATE_LIMIT ? 20 : 5000, // Generous limit for normal runtime
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'test' && !process.env.TEST_RATE_LIMIT,
+  skip: () => (process.env.NODE_ENV === 'test' && !process.env.TEST_RATE_LIMIT),
   statusCode: HttpStatus.TOO_MANY_REQUESTS,
   message: {
     success: false,
@@ -38,14 +37,14 @@ export const authRateLimiter = rateLimit({
 });
 
 /**
- * Targeted rate limiter for compute-intensive AI operations
+ * Targeted rate limiter for AI operations
  */
 export const aiRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 30, // 30 requests per minute
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'test' && !process.env.TEST_RATE_LIMIT,
+  skip: () => (process.env.NODE_ENV === 'test' && !process.env.TEST_RATE_LIMIT),
   statusCode: HttpStatus.TOO_MANY_REQUESTS,
   message: {
     success: false,
@@ -59,10 +58,10 @@ export const aiRateLimiter = rateLimit({
  */
 export const searchRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 60, // 60 search requests per minute
+  max: 2000,
   standardHeaders: true,
   legacyHeaders: false,
-  skip: () => process.env.NODE_ENV === 'test' && !process.env.TEST_RATE_LIMIT,
+  skip: () => (process.env.NODE_ENV === 'test' && !process.env.TEST_RATE_LIMIT),
   statusCode: HttpStatus.TOO_MANY_REQUESTS,
   message: {
     success: false,

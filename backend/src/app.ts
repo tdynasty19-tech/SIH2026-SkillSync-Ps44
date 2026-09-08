@@ -23,31 +23,27 @@ export const createApp = (): Application => {
   // Request correlation ID tracing
   app.use(requestIdMiddleware);
 
-  // 1. Security Headers via Helmet
-  app.use(helmet());
+  // Enable trust proxy for reverse proxies (Railway, Vercel, Cloudflare, AWS)
+  app.set('trust proxy', 1);
 
-  // 2. Cross-Origin Resource Sharing (CORS)
-  // Parse comma-separated list of allowed origins from FRONTEND_URL
-  const allowedOrigins = env.FRONTEND_URL
-    .split(',')
-    .map((origin) => origin.trim().replace(/\/+$/, ''))
-    .filter(Boolean);
+  // 1. Security Headers via Helmet (configured for permissive cross-origin access)
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+      crossOriginOpenerPolicy: false,
+    })
+  );
 
+  // 2. Cross-Origin Resource Sharing (CORS) - Unrestricted across all origins and networks
   app.use(
     cors({
       origin: (origin, callback) => {
-        // Allow requests with no origin (e.g. mobile apps, curl, Postman, server-to-server)
-        if (!origin) return callback(null, true);
-
-        const normalizedOrigin = origin.trim().replace(/\/+$/, '');
-        if (allowedOrigins.indexOf(normalizedOrigin) !== -1 || env.NODE_ENV !== 'production') {
-          return callback(null, true);
-        }
-        return callback(new Error(`CORS policy: Access denied for origin ${origin}`));
+        // Unconditionally allow any origin (all domains, vercel previews, local networks, mobile)
+        callback(null, true);
       },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id', 'Accept', 'Origin', 'X-Requested-With'],
       exposedHeaders: ['X-Request-Id'],
     })
   );
